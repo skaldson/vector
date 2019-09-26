@@ -1,4 +1,10 @@
 #include "classVector.hpp"
+#include <cassert>
+#include <ctime>
+#include <cstdlib>
+#include <iostream>
+#include <initializer_list>
+#include <string.h>
 
 void keepWindowOpen()
 {
@@ -11,89 +17,88 @@ void keepWindowOpen()
 
 bool MyVector::isValid(int _index)
 {
-    return _index>=0&&_index<SIZE;
+    return _index>=0&&_index<m_size;
 }
 
 
 MyVector::~MyVector()
-{delete[]arr;}
+{delete[]m_arr;}
 
-MyVector::MyVector()
-:SIZE(0)
-    ,CAPACITY(10)  
+MyVector::MyVector():m_size(0),m_capacity(5),m_arr(new int[m_size])  
 {
-    arr=new int[CAPACITY];
-    for(int i=0;i<CAPACITY;i++)
-        arr[i]=0;
+    allocateMemory();
 }
 
 void MyVector::allocateMemory()
 {
-        int newCapacity=CAPACITY*2;
-        int *arr1=new int[newCapacity];
-        if(arr)
-            memcpy(arr1,arr,sizeof(int)*newCapacity);
-        delete[]arr;
-        arr=arr1;
-        CAPACITY=newCapacity;
+    int newCapacity=m_capacity*2;
+    int *arr1=new int[newCapacity];
+    if(m_arr)
+    {
+        memcpy(arr1,m_arr,sizeof(int)*newCapacity);
+        for(int i=0;i<m_capacity;i++)
+            m_arr[i]=0;
+    }
+    delete[]m_arr;
+    m_arr=arr1;
+    m_capacity=newCapacity;
+    
 }
 
 void MyVector::push(int _num)
 {
-    if(SIZE==CAPACITY)
+    if(m_size==m_capacity)
         MyVector::allocateMemory();
     else
-        arr[SIZE++]=_num;
+        m_arr[m_size++]=_num;
 }
 
 void MyVector::pop()
 {
-    assert(SIZE==0);
+    assert(m_size==0);
     
-    arr[SIZE--]=0;
+    m_arr[m_size--]=0;
 }
 
 void MyVector::printVector()
 {
-    for(int i=0;i<SIZE;i++)
-        std::cout<<arr[i]<<" ";
+    for(int i=0;i<m_size;i++)
+        std::cout<<m_arr[i]<<" ";
+    std::cout<<std::endl;
 }
 
 int MyVector::size()
 {
-    return SIZE;
+    return m_size;
 }
 
 bool MyVector::isEmpty()
 {
-    return (SIZE==0)?true:false;
+    return (m_size==0)?true:false;
 }
 
-int MyVector::at(int _index)
+int& MyVector::at(int _index)
 {
     assert(isValid(_index));
     
-    return arr[_index];
+    return m_arr[_index];
 }
 
-int MyVector::operator[](int _index)
+int& MyVector::operator[](int _index)
 {
     assert(isValid(_index));
     
-    return arr[_index];
+    return m_arr[_index];
 }
 
-MyVector::MyVector(std::initializer_list<int> list)
-:SIZE(0)
-    ,CAPACITY(5)  
-        ,arr(nullptr)
+MyVector::MyVector(std::initializer_list<int> list):m_size(0),m_capacity(5) ,m_arr(nullptr)
 {
     allocateMemory();
     
     for(auto it:list)
     {
-        arr[SIZE]=it;
-        SIZE++;
+        m_arr[m_size]=it;
+        m_size++;
         
     }
 }
@@ -101,13 +106,13 @@ MyVector::MyVector(std::initializer_list<int> list)
 MyVector::MyVector(const MyVector &destnVec)
 {
     int *temp_ptr=new int;
-    *temp_ptr=*destnVec.arr;
+    *temp_ptr=*destnVec.m_arr;
 }
 
 MyVector & MyVector::operator=(const MyVector &sighVector)
 {
     int *temp_ptr=new int;
-    *temp_ptr=*sighVector.arr;
+    *temp_ptr=*sighVector.m_arr;
     
     return *this;
 }
